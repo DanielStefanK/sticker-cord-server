@@ -1,12 +1,20 @@
 import { createConnection, Connection } from "typeorm";
+import {Image} from './entities/Image'
 
 let connection: Connection
 
 async function makeConnection (): Promise<Connection> {
   connection = await createConnection({
-    type: "mongodb",
+    type: "postgres",
     host: process.env.DB_HOST|| "localhost",
-    port: Number.parseInt (process.env.DB_PORT || "27017"),
+    port: Number.parseInt (process.env.DB_PORT || "5432"),
+    username: process.env.DB_USER||"postgres",
+    password: process.env.DB_PASS||"postgres",
+    synchronize: true,
+    logging: false,
+    entities: [
+      Image
+    ],
     database: "sticker-cord"
   })
 
@@ -21,5 +29,6 @@ function getConnection (): Connection {
 
 export {
   makeConnection,
-  getConnection
+  getConnection,
+  Image
 }

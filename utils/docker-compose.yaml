@@ -1,14 +1,25 @@
-version: '3.7'
+version: '3.1'
+
 services:
-  mongodb_container:
-    image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+
+  sticker_db:
+    container_name: stickerDB
+    image: postgres
+    restart: unless-stopped
     ports:
-      - 27017:27017
+      - 5432:5432
     volumes:
-      - mongodb_data_container:/data/db
+      - sticker_db_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  sticker_adminer:
+    container_name: stickerAdminer
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
 
 volumes:
-  mongodb_data_container:
+  sticker_db_volume:
