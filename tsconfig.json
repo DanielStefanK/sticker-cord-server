@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "module": "commonjs",
@@ -9,7 +8,7 @@
     "experimentalDecorators": true,
     "target": "es6",
     "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "importHelpers": true,
     "types": [
       "node"
