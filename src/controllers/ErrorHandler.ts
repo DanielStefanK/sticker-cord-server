@@ -10,6 +10,37 @@ function logInvalidValueError (res: any, field: string) {
   return res
 }
 
+function logMissingValueError (res: any, field: string) {
+  res.result = {
+    code: "value/invalid",
+    params: {
+      field: field
+    }
+  }
+
+  res.success = false
+  return res
+}
+
+
+function logAuthorization (res: any) {
+  res.result = {
+    code: "auth/authorization",
+  }
+
+  res.success = false
+  return res
+}
+
+function logAuthentication (res: any) {
+  res.result = {
+    code: "auth/authentication",
+  }
+
+  res.success = false
+  return res
+}
+
 function logObjectDoesNotExist (res: any, id: string|number) {
   res.result = {
     code: "datamgmt/objectdoesnotexist",
@@ -24,5 +55,8 @@ function logObjectDoesNotExist (res: any, id: string|number) {
 
 export {
   logInvalidValueError,
-  logObjectDoesNotExist
+  logObjectDoesNotExist,
+  logMissingValueError,
+  logAuthentication,
+  logAuthorization
 }

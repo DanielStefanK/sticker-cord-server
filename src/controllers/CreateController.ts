@@ -6,6 +6,7 @@ import * as sharp from 'sharp'
 
 import {Image, getConnection} from '../db'
 import * as ErrorHandler from './ErrorHandler'
+import {loggedIn} from './middleware/auth'
 
 var storage = multer.memoryStorage()
 
@@ -14,7 +15,7 @@ const upload = multer({ storage });
 @Controller('sticker/create')
 class CreateController {
   @Post('upload')
-  @Middleware([upload.single('sticker')])
+  @Middleware([loggedIn, upload.single('sticker')])
   private async uploadPicture(req: Request, res: Response) {
     const file = req.file
     Logger.Info("uploading file")

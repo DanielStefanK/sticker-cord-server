@@ -1,5 +1,9 @@
 import { createConnection, Connection } from "typeorm";
+import * as bcrypt from 'bcrypt'
+
 import {Image} from './entities/Image'
+import {User} from './entities/User'
+
 
 let connection: Connection
 
@@ -13,10 +17,25 @@ async function makeConnection (): Promise<Connection> {
     synchronize: true,
     logging: false,
     entities: [
-      Image
+      Image,
+      User
     ],
     database: "sticker-cord"
   })
+
+  const userRepo = connection.getRepository(User)
+
+  const user = await userRepo.findOne()
+
+  if (!user) {
+    const user = userRepo.create({
+      username: process.env.INITAL_USER || "daniel",
+      password: bcrypt.hashSync(process.env.INITAL_PASS || "geheim", 10)
+    })
+
+    await userRepo.save(user)
+  }
+
 
   return connection
 }
@@ -30,5 +49,6 @@ function getConnection (): Connection {
 export {
   makeConnection,
   getConnection,
-  Image
+  Image,
+  User
 }
