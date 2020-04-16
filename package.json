@@ -1,0 +1,17 @@
+{
+  "name": "stickercord-server",
+  "version": "1.0.0",
+  "description": "backend for managing sticker used",
+  "main": "src/start.ts",
+  "author": "Daniel Stefan Klose",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.3",
+    "ts-node": "^8.8.2",
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}
