@@ -27,8 +27,9 @@ async function loggedIn (req: Request, res: Response, next: NextFunction) {
       const user = await userRepo.findOne({where:{id: decoded.userId}})
 
       if (user) {
-        req.user = user
+        req.user = {...user, password: undefined}
         next ()
+        return;
       }
 
       throw new Error ("user not found")

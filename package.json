@@ -6,8 +6,10 @@
   "author": "Daniel Stefan Klose",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --config \"./nodemon.json\"/",
-    "prod": "tsc && node ./build/start.js"
+    "dev": "concurrently \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch-node" : "nodemon build/start.js",
+    "watch-ts": "tsc -w",
+    "prod": "tsc && node ./build/start.js",
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -17,6 +19,7 @@
     "@types/multer": "^1.4.2",
     "@types/node": "^13.11.1",
     "@types/sharp": "^0.24.0",
+    "concurrently": "^5.1.0",
     "nodemon": "^2.0.3",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",
