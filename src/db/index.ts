@@ -3,6 +3,9 @@ import * as bcrypt from 'bcrypt'
 
 import {Image} from './entities/Image'
 import {User} from './entities/User'
+import {Sticker} from './entities/Sticker'
+import {Tag, initalTags} from './entities/Tag'
+import { Logger } from '@overnightjs/logger';
 
 
 let connection: Connection
@@ -18,15 +21,17 @@ async function makeConnection (): Promise<Connection> {
     logging: false,
     entities: [
       Image,
-      User
+      User,
+      Tag,
+      Sticker
     ],
     database: "sticker-cord"
   })
 
   const userRepo = connection.getRepository(User)
-
   const user = await userRepo.findOne()
 
+  // create inital user
   if (!user) {
     const user = userRepo.create({
       username: process.env.INITAL_USER || "daniel",
@@ -36,6 +41,16 @@ async function makeConnection (): Promise<Connection> {
     await userRepo.save(user)
   }
 
+  const tagRepo = connection.getRepository(Tag)
+  const tag = await tagRepo.findOne()
+
+  if (!tag) {
+    await Promise.all (
+      initalTags.map((t) =>
+        tagRepo.save (tagRepo.create({name: t}))
+      )
+    )
+  }
 
   return connection
 }
@@ -50,5 +65,7 @@ export {
   makeConnection,
   getConnection,
   Image,
-  User
+  User,
+  Tag,
+  Sticker
 }

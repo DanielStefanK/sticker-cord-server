@@ -53,10 +53,24 @@ function logObjectDoesNotExist (res: any, id: string|number) {
   return res
 }
 
+
+function logProcessingError (res: any, process: string) {
+  res.result = {
+    code: "server/processing",
+    params: {
+      process
+    }
+  }
+
+  res.success = false
+  return res
+}
+
 export {
   logInvalidValueError,
   logObjectDoesNotExist,
   logMissingValueError,
   logAuthentication,
-  logAuthorization
+  logAuthorization,
+  logProcessingError
 }

@@ -4,7 +4,7 @@ import { Logger } from '@overnightjs/logger';
 import * as multer from 'multer'
 import * as sharp from 'sharp'
 
-import {Image, getConnection} from '../db'
+import {Image, Sticker, Tag, getConnection} from '../db'
 import * as ErrorHandler from './ErrorHandler'
 import {loggedIn} from './middleware/auth'
 
@@ -40,11 +40,59 @@ class CreateController {
     Logger.Info("saving file")
     await imgRepo.save(img)
 
+    storage._removeFile(req, file, ()=>{
+      Logger.Info("removed file from storage")
+    })
 
     return res.send({
       success: true,
       imgId: img.id
     })
+  }
+
+  @Post('new')
+  @Middleware([loggedIn])
+  private async createSticker(req: Request, res: Response) {
+    Logger.Info("creating new sticker")
+
+    const {name, description, imageId, tags} = req.body
+
+    if (!name) {
+      Logger.Warn("no name for new sticker given")
+      res.send(ErrorHandler.logMissingValueError({}, "name"))
+      return;
+    }
+
+    if (!description) {
+      Logger.Warn("no name for new sticker given")
+      res.send(ErrorHandler.logMissingValueError({}, "description"))
+      return;
+    }
+
+    const stickerRepo = getConnection().getRepository(Sticker)
+
+    //TODO: check if image and tags exist
+
+    const sticker = stickerRepo.create({
+      image: {id: imageId},
+      tags: tags.map ((id: number)=>({id})),
+      creator: {id: req.user.id},
+      stickerName: name,
+      description
+    })
+
+    stickerRepo.save(sticker).then((s) => {
+      Logger.Info("created new sticker")
+      res.send({
+        success: true,
+        sticker: s
+      })
+    }).catch((e) => {
+      Logger.Err("could not create sticker")
+      Logger.Err(e)
+      res.send(ErrorHandler.logProcessingError({}, "sticker-creation"))
+    })
+
   }
 }
 

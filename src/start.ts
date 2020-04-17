@@ -9,7 +9,7 @@ require('dotenv').config({
 
 makeConnection().then((c: Connection) => {
   const exampleServer = new StickerCord();
-  exampleServer.start(3000);
+  exampleServer.start(6080);
 }).catch ((e) => {
   Logger.Err("could not create Server")
   Logger.Err(e)
