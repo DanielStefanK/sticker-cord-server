@@ -1,11 +1,11 @@
-import { LoginController } from "./LoginController"
+import { LoginController } from './LoginController'
 import { CreateController } from './CreateController'
-import {ImageController} from './ImageController'
+import { ImageController } from './ImageController'
 
 const controllers = {
   LoginController,
   CreateController,
-  ImageController
+  ImageController,
 }
 
 export default controllers

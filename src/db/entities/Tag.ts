@@ -1,21 +1,14 @@
-import {Entity, ObjectID, Column, PrimaryGeneratedColumn} from "typeorm";
+import { Entity, ObjectID, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 class Tag {
-    @PrimaryGeneratedColumn()
-    id!: ObjectID;
+  @PrimaryGeneratedColumn()
+  id!: ObjectID
 
-    @Column()
-    name!: string;
+  @Column()
+  name!: string
 }
 
-const initalTags = [
-  "funny",
-  "meme",
-  "gif"
-]
+const initalTags = ['funny', 'meme', 'gif']
 
-export {
-  Tag,
-  initalTags
-}
+export { Tag, initalTags }

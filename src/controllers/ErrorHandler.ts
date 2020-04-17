@@ -1,65 +1,84 @@
-function logInvalidValueError (res: any, field: string) {
+interface Parameter {
+  field?: string
+  id?: string | number
+  process?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface Data {}
+
+interface ResponseData {
+  result?: {
+    code: string
+    params?: Parameter
+  }
+  success?: boolean
+  data?: Data
+}
+
+function logInvalidValueError(res: ResponseData, field: string): ResponseData {
   res.result = {
-    code: "value/invalid",
+    code: 'value/invalid',
     params: {
-      field: field
-    }
+      field: field,
+    },
   }
 
   res.success = false
   return res
 }
 
-function logMissingValueError (res: any, field: string) {
+function logMissingValueError(res: ResponseData, field: string): ResponseData {
   res.result = {
-    code: "value/invalid",
+    code: 'value/invalid',
     params: {
-      field: field
-    }
+      field: field,
+    },
   }
 
   res.success = false
   return res
 }
 
-
-function logAuthorization (res: any) {
+function logAuthorization(res: ResponseData): ResponseData {
   res.result = {
-    code: "auth/authorization",
+    code: 'auth/authorization',
   }
 
   res.success = false
   return res
 }
 
-function logAuthentication (res: any) {
+function logAuthentication(res: ResponseData): ResponseData {
   res.result = {
-    code: "auth/authentication",
+    code: 'auth/authentication',
   }
 
   res.success = false
   return res
 }
 
-function logObjectDoesNotExist (res: any, id: string|number) {
+function logObjectDoesNotExist(
+  res: ResponseData,
+  id: string | number,
+): ResponseData {
   res.result = {
-    code: "datamgmt/objectdoesnotexist",
+    code: 'datamgmt/objectdoesnotexist',
     params: {
-      id
-    }
+      id,
+    },
   }
 
   res.success = false
   return res
 }
 
-
-function logProcessingError (res: any, process: string) {
+function logProcessingError(res: ResponseData, process: string): ResponseData {
   res.result = {
-    code: "server/processing",
+    code: 'server/processing',
     params: {
-      process
-    }
+      process,
+    },
   }
 
   res.success = false
@@ -72,5 +91,5 @@ export {
   logMissingValueError,
   logAuthentication,
   logAuthorization,
-  logProcessingError
+  logProcessingError,
 }
