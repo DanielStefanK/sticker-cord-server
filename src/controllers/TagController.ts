@@ -15,7 +15,12 @@ class TagController {
     const tagRepo = c.getRepository(Tag)
 
     tagRepo
-      .find()
+      .find({
+        order: {
+          name: 'ASC',
+          id: 'DESC',
+        },
+      })
       .then((t) => {
         res.json({
           success: true,

@@ -8,6 +8,7 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
+  RelationId,
 } from 'typeorm'
 
 import { User } from './User'
@@ -36,4 +37,7 @@ export class Sticker {
   @ManyToMany(() => Tag)
   @JoinTable()
   tags!: Tag[]
+
+  @RelationId('image')
+  imageId!: string
 }
