@@ -10,13 +10,11 @@ class StickerController {
   @Post('load/all')
   private async getSticker(req: Request, res: Response): Promise<void> {
     Logger.Info(`requesting all tags`)
-    const { term, tags } = req.body
+    const { term, tags, page = 1 } = req.body
     const c = getConnection()
     const stickerRepo = c.getRepository(Sticker)
 
     try {
-      Logger.Info(tags)
-
       const q = stickerRepo
         .createQueryBuilder('sticker')
         .leftJoinAndSelect('sticker.tags', 'tags')
@@ -33,11 +31,18 @@ class StickerController {
         })
       }
 
-      q.getMany()
-        .then((s) => {
+      q.orderBy('sticker.stickerName', 'DESC')
+        .skip((page - 1) * 12)
+        .take(12)
+        .getManyAndCount()
+        .then(([s, count]) => {
           res.json({
             success: true,
-            data: s,
+            data: {
+              sticker: s,
+              count: count,
+              page,
+            },
           })
         })
         .catch((e) => {
