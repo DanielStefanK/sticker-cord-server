@@ -1,6 +1,13 @@
-import { Entity, ObjectID, Column, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Entity,
+  ObjectID,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm'
 
 @Entity()
+@Unique(['name'])
 class Tag {
   @PrimaryGeneratedColumn()
   id!: ObjectID

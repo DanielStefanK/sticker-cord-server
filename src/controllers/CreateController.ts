@@ -57,6 +57,7 @@ class CreateController {
     Logger.Info('creating new sticker')
 
     const { name, description, imageId, tags } = req.body
+    //TODO: better validation
 
     if (!name) {
       Logger.Warn('no name for new sticker given')
