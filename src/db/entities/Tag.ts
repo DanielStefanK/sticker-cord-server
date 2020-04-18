@@ -7,6 +7,12 @@ class Tag {
 
   @Column()
   name!: string
+
+  @Column({ nullable: true })
+  color?: string
+
+  @Column({ nullable: true })
+  icon?: string
 }
 
 const initalTags = ['funny', 'meme', 'gif']
