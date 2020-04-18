@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Controller, Middleware, Post } from '@overnightjs/core'
 import { Logger } from '@overnightjs/logger'
 import * as multer from 'multer'
-import * as sharp from 'sharp'
+import * as gm from 'gm'
 
 import { Image, Sticker, getConnection } from '../db'
 import * as ErrorHandler from './ErrorHandler'
@@ -28,27 +28,43 @@ class CreateController {
 
     //TODO: use other lib that supports gifs
     Logger.Info('resizing file')
-    const imgData = await sharp(file.buffer)
-      .resize({ width: 128, height: 128, fit: 'inside' })
-      .png()
-      .toBuffer()
 
-    const c = getConnection()
-    const imgRepo = c.getRepository(Image)
-    const img = imgRepo.create({ data: imgData, mimetype: 'image/png' })
+    gm(file.buffer)
+      .resize(128, 128)
+      .stream(function (err, stdout, stderr) {
+        if (err) {
+          Logger.Err('error wile formatting img')
+          Logger.Err(err)
+          return
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const chunks: any = []
+        stdout.on('data', function (chunk) {
+          chunks.push(chunk)
+        })
+        stdout.on('end', async function () {
+          const image = Buffer.concat(chunks)
+          const c = getConnection()
+          const imgRepo = c.getRepository(Image)
+          const img = imgRepo.create({ data: image, mimetype: file.mimetype })
 
-    Logger.Info('saving file')
-    await imgRepo.save(img)
+          Logger.Info('saving file')
+          await imgRepo.save(img)
 
-    storage._removeFile(req, file, () => {
-      Logger.Info('removed file from storage')
-    })
+          storage._removeFile(req, file, () => {
+            Logger.Info('removed file from storage')
+          })
 
-    res.send({
-      success: true,
-      imgId: img.id,
-    })
-    return
+          res.send({
+            success: true,
+            imgId: img.id,
+          })
+        })
+        stderr.on('data', function (data) {
+          Logger.Err('error wile formatting img')
+          Logger.Err(data)
+        })
+      })
   }
 
   @Post('new')
