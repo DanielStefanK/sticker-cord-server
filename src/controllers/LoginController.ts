@@ -1,11 +1,12 @@
 import { Request, Response } from 'express'
-import { Controller, Post } from '@overnightjs/core'
+import { Controller, Post, Middleware, Get } from '@overnightjs/core'
 import { Logger } from '@overnightjs/logger'
 import * as jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
 
 import { User, getConnection } from '../db'
 import * as ErrorHandler from './ErrorHandler'
+import { loggedIn } from './middleware/auth'
 
 @Controller('auth')
 class LoginController {
@@ -59,6 +60,15 @@ class LoginController {
         Logger.Warn(`user ${username} could not be authenticated`)
         res.json(ErrorHandler.logAuthentication({}))
       })
+  }
+
+  @Get('me')
+  @Middleware([loggedIn])
+  private getMe(req: Request, res: Response): void {
+    res.json({
+      success: true,
+      data: req.user,
+    })
   }
 }
 
