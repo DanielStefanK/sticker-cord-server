@@ -114,6 +114,84 @@ class CreateController {
         res.send(ErrorHandler.logProcessingError({}, 'sticker-creation'))
       })
   }
+
+  @Post('update')
+  @Middleware([loggedIn])
+  private async updateSticker(req: Request, res: Response): Promise<void> {
+    Logger.Info('updateting a sticker')
+
+    const { name, description, imageId, tags, id, downloads } = req.body
+    //TODO: better validation
+
+    if (!name) {
+      Logger.Warn('no name for new sticker given')
+      res.send(ErrorHandler.logMissingValueError({}, 'name'))
+      return
+    }
+
+    if (!description) {
+      Logger.Warn('no name for new sticker given')
+      res.send(ErrorHandler.logMissingValueError({}, 'description'))
+      return
+    }
+
+    const stickerRepo = getConnection().getRepository(Sticker)
+    const imgRepo = getConnection().getRepository(Image)
+
+    //TODO: check if image and tags exist
+
+    const sticker = await stickerRepo.findOne({ where: { id } })
+
+    if (sticker) {
+      const img = await imgRepo.findOne({ where: { id: imageId } })
+
+      if (!img) {
+        Logger.Warn('sticker not found for update')
+        res.send(ErrorHandler.logObjectDoesNotExist({}, id))
+        return
+      }
+
+      sticker.image = img
+      sticker.description = description
+      sticker.stickerName = name
+      sticker.tags = tags.map((id: number) => ({ id }))
+      if (downloads) {
+        sticker.downloads = downloads
+      }
+      stickerRepo.save(sticker).then((s) => {
+        res.json({
+          success: true,
+          data: s,
+        })
+      })
+    } else {
+      Logger.Warn('sticker not found for update')
+      res.send(ErrorHandler.logObjectDoesNotExist({}, id))
+      return
+    }
+  }
+
+  @Post('delete')
+  @Middleware([loggedIn])
+  private async deleteSticker(req: Request, res: Response): Promise<void> {
+    Logger.Info('delting a sticker')
+
+    const { id } = req.body
+
+    const stickerRepo = getConnection().getRepository(Sticker)
+    const sticker = await stickerRepo.findOne({ where: { id } })
+
+    if (sticker) {
+      await stickerRepo.delete({ id })
+      res.json({
+        success: true,
+      })
+    } else {
+      Logger.Warn('sticker not found for deletion')
+      res.send(ErrorHandler.logObjectDoesNotExist({}, id))
+      return
+    }
+  }
 }
 
 export { CreateController }
