@@ -4,7 +4,7 @@ import { Logger } from '@overnightjs/logger'
 
 import * as mime from 'mime-types'
 
-import { Image, getConnection } from '../db'
+import { Image, Sticker, getConnection } from '../db'
 import * as ErrorHandler from './ErrorHandler'
 
 @Controller('img')
@@ -32,6 +32,20 @@ class ImageController {
         })
 
         res.end(img?.data)
+        if (filename) {
+          const stickerRepo = c.getRepository(Sticker)
+          stickerRepo
+            .findOne({ where: { image: { id } } })
+            .then((s) => {
+              if (s) {
+                s.downloads = s.downloads + 1
+                stickerRepo.save(s)
+              }
+            })
+            .catch(() => {
+              Logger.Err('could not increment download count')
+            })
+        }
       })
       .catch(() => {
         Logger.Warn(`image with id ${id} was not found`)

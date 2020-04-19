@@ -27,11 +27,11 @@ class StickerController {
 
       if (term) {
         q.andWhere('sticker.stickerName like :term', {
-          term: `${term}%`,
+          term: `%${term}%`,
         })
       }
 
-      q.orderBy('sticker.stickerName', 'DESC')
+      q.orderBy('sticker.downloads', 'DESC')
         .skip((page - 1) * 12)
         .take(12)
         .getManyAndCount()
@@ -42,6 +42,7 @@ class StickerController {
               sticker: s,
               count: count,
               page,
+              hasMore: page * 12 < count,
             },
           })
         })

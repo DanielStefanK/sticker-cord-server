@@ -40,4 +40,7 @@ export class Sticker {
 
   @RelationId('image')
   imageId!: string
+
+  @Column({ default: 0 })
+  downloads!: number
 }
