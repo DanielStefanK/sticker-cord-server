@@ -8,7 +8,11 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN apk --update add imagemagick
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends graphicsmagick \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 RUN npm install
 # If you are building your code for production
 # RUN npm install --only=production
