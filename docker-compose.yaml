@@ -12,6 +12,16 @@ services:
       - traefik.frontend.rule=Host:api.sticker.daniel-stefan.dev
       - traefik.docker.network=web
       - traefik.port=6080
+    environment:
+      JWT_SECRET: test
+      JWT_EXPIRATION: 10h
+      DB_HOST: stickerDB
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      JWT_SECRET: test
+      INITAL_USER: daniel
+      INITAL_PASS: geheim
     restart: always
 
   sticker_db:
