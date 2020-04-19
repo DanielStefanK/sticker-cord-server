@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Controller, Get, Post } from '@overnightjs/core'
+import { Controller, Post } from '@overnightjs/core'
 import { Logger } from '@overnightjs/logger'
 
 import { Sticker, getConnection } from '../db'

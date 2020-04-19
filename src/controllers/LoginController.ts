@@ -29,7 +29,7 @@ class LoginController {
     const c = getConnection()
     const userRepo = c.getRepository(User)
     userRepo
-      .findOne({ where: { username } })
+      .findOne({ where: { username: username.toLowerCase() } })
       .then(async (u) => {
         if (!u) {
           Logger.Warn(`user ${username} was not found`)
@@ -60,6 +60,37 @@ class LoginController {
         Logger.Warn(`user ${username} could not be authenticated`)
         res.json(ErrorHandler.logAuthentication({}))
       })
+  }
+
+  @Post('changepassword')
+  @Middleware([loggedIn])
+  private async changePass(req: Request, res: Response): Promise<void> {
+    const { oldPassword, newPassword } = req.body
+    const result = await bcrypt.compare(oldPassword, req.user.password)
+
+    if (result) {
+      const c = getConnection()
+      const userRepo = c.getRepository(User)
+      userRepo
+        .update(
+          { id: req.user.id },
+          { password: bcrypt.hashSync(newPassword, 10) },
+        )
+        .then((s) => {
+          if (s) {
+            res.json({
+              success: true,
+            })
+          } else {
+            Logger.Warn(`user was not found`)
+            throw new Error('no user found')
+          }
+        })
+        .catch(() => {
+          Logger.Warn(`password could not be changed`)
+          res.json(ErrorHandler.logProcessingError({}, 'change-password'))
+        })
+    }
   }
 
   @Get('me')

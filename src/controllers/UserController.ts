@@ -23,7 +23,7 @@ class UserController {
     const userRepo = getConnection().getRepository(User)
 
     const user = userRepo.create({
-      username: username,
+      username: username.toLowerCase(),
       password: bcrypt.hashSync(password, 10),
     })
 
@@ -81,21 +81,37 @@ class UserController {
   @Post('load/all')
   @Middleware([loggedIn, isAdmin])
   private async loadAllUser(req: Request, res: Response): Promise<void> {
-    const { page = 1 } = req.body
+    const { page = 1, term = '' } = req.body
     const userRepo = getConnection().getRepository(User)
 
-    const [users, count] = await userRepo.findAndCount({
-      skip: (page - 1) * 20,
-      take: 20,
-    })
-    res.json({
-      success: true,
-      data: {
-        users,
-        count,
-        hasMore: page * 20 < count,
-      },
-    })
+    const q = userRepo.createQueryBuilder('user')
+
+    if (term) {
+      q.andWhere('user.username like :term', {
+        term: `${term}%`,
+      })
+    }
+
+    q.orderBy('user.username', 'ASC')
+      .skip((page - 1) * 20)
+      .take(20)
+      .getManyAndCount()
+      .then(([s, count]) => {
+        res.json({
+          success: true,
+          data: {
+            users: s,
+            count: count,
+            page,
+            hasMore: page * 20 < count,
+          },
+        })
+      })
+      .catch((e) => {
+        Logger.Err('could not load all user')
+        Logger.Err(e)
+        res.json(ErrorHandler.logProcessingError({}, 'load-users'))
+      })
   }
 }
 

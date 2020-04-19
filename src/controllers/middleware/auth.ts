@@ -33,7 +33,7 @@ async function loggedIn(
       const user = await userRepo.findOne({ where: { id: decoded.userId } })
 
       if (user) {
-        req.user = { ...user, password: undefined }
+        req.user = { ...user }
         next()
         return
       }
