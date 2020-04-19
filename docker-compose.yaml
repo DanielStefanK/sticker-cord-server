@@ -1,0 +1,38 @@
+version: '3'
+services:
+  stickerBackend:
+    build: ./
+    container_name: sticker-cord-backend
+    networks:
+      - web
+      - db
+    labels:
+      - traefik.enabled=true
+      - traefik.backend=sticker-cord-backend
+      - traefik.frontend.rule=Host:api.sticker.daniel-stefan.dev
+      - traefik.docker.network=web
+      - traefik.port=6080
+    restart: always
+
+  sticker_db:
+    container_name: stickerDB
+    image: postgres
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false
+    networks:
+      - db
+    volumes:
+      - sticker_db_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+networks:
+  web:
+    external: true
+  db:
+    external: false
+
+volumes:
+  sticker_db_volume:
