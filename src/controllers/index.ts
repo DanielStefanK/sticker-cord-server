@@ -3,6 +3,7 @@ import { CreateController } from './CreateController'
 import { ImageController } from './ImageController'
 import { TagController } from './TagController'
 import { StickerController } from './StickerController'
+import { UserController } from './UserController'
 
 const controllers = {
   LoginController,
@@ -10,6 +11,7 @@ const controllers = {
   ImageController,
   TagController,
   StickerController,
+  UserController,
 }
 
 export default controllers
