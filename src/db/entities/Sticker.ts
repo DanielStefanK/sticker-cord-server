@@ -24,7 +24,7 @@ export class Sticker {
   stickerName!: string
 
   @Column()
-  description!: string
+  description?: string
 
   @ManyToOne(() => User)
   @JoinColumn()
