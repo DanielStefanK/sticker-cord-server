@@ -4,7 +4,7 @@ import {
   redirectUri,
   scope,
   botToken,
-} from './constants'
+} from '../constants'
 
 import fetch from 'node-fetch'
 import { Logger } from '@overnightjs/logger'
