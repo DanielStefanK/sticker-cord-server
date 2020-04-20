@@ -3,12 +3,12 @@ import { Logger } from '@overnightjs/logger'
 
 import * as ErrorHandler from '../ErrorHandler'
 
-async function loggedIn(
+async function loggedInDiscord(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  if (req.user) {
+  if (req.discordUser) {
     next()
   } else {
     Logger.Warn(
@@ -20,4 +20,4 @@ async function loggedIn(
   }
 }
 
-export { loggedIn }
+export { loggedInDiscord }

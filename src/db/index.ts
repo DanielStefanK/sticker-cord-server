@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt'
 import { Image } from './entities/Image'
 import { User } from './entities/User'
 import { Sticker } from './entities/Sticker'
+import { DiscordUser } from './entities/DiscordUser'
 import { Tag, initalTags } from './entities/Tag'
 
 let connection: Connection
@@ -17,7 +18,7 @@ async function makeConnection(): Promise<Connection> {
     password: process.env.DB_PASS || 'postgres',
     synchronize: true,
     logging: false,
-    entities: [Image, User, Tag, Sticker],
+    entities: [Image, User, Tag, Sticker, DiscordUser],
     database: 'sticker-cord',
   })
 
@@ -51,4 +52,4 @@ function getConnection(): Connection {
   throw new Error('Connection not established')
 }
 
-export { makeConnection, getConnection, Image, User, Tag, Sticker }
+export { makeConnection, getConnection, Image, User, Tag, Sticker, DiscordUser }

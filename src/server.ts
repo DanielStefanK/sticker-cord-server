@@ -5,6 +5,8 @@ import { Server } from '@overnightjs/core'
 import { Logger } from '@overnightjs/logger'
 import { Response, Request } from 'express'
 
+import { provideUser } from './controllers/middleware/provideUser'
+
 class StickerCord extends Server {
   private readonly SERVER_STARTED = 'Example server started on port: '
 
@@ -13,6 +15,7 @@ class StickerCord extends Server {
     this.app.use(cors())
     this.app.use(bodyParser.json())
     this.app.use(bodyParser.urlencoded({ extended: true }))
+    this.app.use(provideUser)
     this.setupControllers()
   }
 
