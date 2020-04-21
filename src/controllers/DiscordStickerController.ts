@@ -1,16 +1,11 @@
 import { Request, Response } from 'express'
-import { Controller, Post, Get, Middleware } from '@overnightjs/core'
+import { Controller, Post, Middleware } from '@overnightjs/core'
 import { Logger } from '@overnightjs/logger'
-import * as jwt from 'jsonwebtoken'
 import * as discord from 'discord.js'
 
-import { DiscordUser, getConnection, Sticker } from '../db'
+import { getConnection, Sticker } from '../db'
 import * as ErrorHandler from './ErrorHandler'
-import {
-  getAccessToken,
-  getUserIdentity,
-  getGuildInfo,
-} from '../discord/oauth/utils'
+
 import { loggedInDiscord } from './middleware/discordAuth'
 import { createBot } from '../discord/bot/createBot'
 
