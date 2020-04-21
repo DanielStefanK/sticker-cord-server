@@ -78,8 +78,6 @@ export function getUserIdentity(accessToken: string): Promise<DiscordUserInfo> {
 }
 
 export function getGuildInfo(guildId: string): Promise<GuildInfoResponse> {
-  console.log(`Bot ${guildId}`)
-
   return fetch(`https://discordapp.com/api/guilds/${guildId}`, {
     headers: {
       Authorization: `Bot ${botToken}`,

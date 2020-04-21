@@ -28,7 +28,7 @@ class DiscordStickerController {
     req: Request,
     res: Response,
   ): Promise<void> {
-    const { stickerId } = req.body
+    const { stickerId, name } = req.body
     const { currentGuildId } = req.discordUser
 
     const stickerRepo = getConnection().getRepository(Sticker)
@@ -53,11 +53,20 @@ class DiscordStickerController {
 
     const eM = new discord.GuildEmojiManager(guild)
 
-    await eM.create(sticker.image.data, sticker.stickerName.replace(/ /g, ''))
-
-    res.json({
-      success: true,
-    })
+    eM.create(
+      sticker.image.data,
+      name ? name.replace(/ /g, '') : sticker.stickerName.replace(/ /g, ''),
+    )
+      .then(() => {
+        res.json({
+          success: true,
+        })
+      })
+      .catch((e) => {
+        Logger.Err('could not add emoji')
+        Logger.Err(e)
+        res.json(ErrorHandler.logProcessingError({}, 'add emoji'))
+      })
   }
 }
 

@@ -68,10 +68,13 @@ class DiscordLoginController {
           },
         )
 
+        const guildInfo = await getGuildInfo(guildId)
+
         res.json({
           success: true,
           token,
-          user: duInfo,
+          user: { ...duInfo, guild: guildInfo },
+          guildInfo,
         })
         return
       })
@@ -89,8 +92,7 @@ class DiscordLoginController {
     const guildInfo = await getGuildInfo(req.discordUser.currentGuildId)
     res.json({
       success: true,
-      user: info,
-      guildInfo: guildInfo,
+      user: { ...info, guild: guildInfo },
     })
   }
 }

@@ -9,7 +9,7 @@
     "dev": "concurrently \"npm run watch-ts\" \"npm run watch-node\"",
     "watch-node": "nodemon build/start.js",
     "watch-ts": "tsc -w",
-    "prod": "tsc && node ./build/start.js",
+    "prod": "tsc && node --inspect ./build/start.js",
     "format": "eslint --fix \"src/**\""
   },
   "devDependencies": {
@@ -22,6 +22,7 @@
     "@types/multer": "^1.4.2",
     "@types/node": "^13.11.1",
     "@types/sharp": "^0.24.0",
+    "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
     "concurrently": "^5.1.0",
