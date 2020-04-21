@@ -29,42 +29,46 @@ class CreateController {
     //TODO: use other lib that supports gifs
     Logger.Info('resizing file')
 
-    gm(file.buffer)
-      .resize(128, 128)
-      .stream(function (err, stdout, stderr) {
-        if (err) {
-          Logger.Err('error wile formatting img')
-          Logger.Err(err)
-          return
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const chunks: any = []
-        stdout.on('data', function (chunk) {
-          chunks.push(chunk)
+    let formatter = gm(file.buffer)
+
+    if (file.size > 256000) {
+      formatter = formatter.resize(128, 128)
+    }
+
+    formatter.stream(function (err, stdout, stderr) {
+      if (err) {
+        Logger.Err('error wile formatting img')
+        Logger.Err(err)
+        return
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const chunks: any = []
+      stdout.on('data', function (chunk) {
+        chunks.push(chunk)
+      })
+      stdout.on('end', async function () {
+        const image = Buffer.concat(chunks)
+        const c = getConnection()
+        const imgRepo = c.getRepository(Image)
+        const img = imgRepo.create({ data: image, mimetype: file.mimetype })
+
+        Logger.Info('saving file')
+        await imgRepo.save(img)
+
+        storage._removeFile(req, file, () => {
+          Logger.Info('removed file from storage')
         })
-        stdout.on('end', async function () {
-          const image = Buffer.concat(chunks)
-          const c = getConnection()
-          const imgRepo = c.getRepository(Image)
-          const img = imgRepo.create({ data: image, mimetype: file.mimetype })
 
-          Logger.Info('saving file')
-          await imgRepo.save(img)
-
-          storage._removeFile(req, file, () => {
-            Logger.Info('removed file from storage')
-          })
-
-          res.send({
-            success: true,
-            imgId: img.id,
-          })
-        })
-        stderr.on('data', function (data) {
-          Logger.Err('error wile formatting img')
-          Logger.Err(data)
+        res.send({
+          success: true,
+          imgId: img.id,
         })
       })
+      stderr.on('data', function (data) {
+        Logger.Err('error wile formatting img')
+        Logger.Err(data)
+      })
+    })
   }
 
   @Post('new')
