@@ -7,6 +7,8 @@ import { User, getConnection, DiscordUser } from '../../db'
 interface TokenData {
   userId?: string
   discordUserId?: boolean
+  accessToken?: string
+  refreshToken?: string
 }
 
 async function provideUser(
@@ -47,7 +49,8 @@ async function provideUser(
         })
 
         if (user) {
-          req.discordUser = { ...user }
+          req.discordUser = { ...user, ...decoded }
+          req
           next()
           return
         }

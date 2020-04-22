@@ -8,15 +8,6 @@ export class DiscordUser {
   @Column({ unique: true })
   discordUserId!: string
 
-  @Column()
-  accessToken!: string
-
-  @Column()
-  refreshToken!: string
-
-  @Column()
-  tokenExpiration!: Date
-
   @Column({
     nullable: true,
   })

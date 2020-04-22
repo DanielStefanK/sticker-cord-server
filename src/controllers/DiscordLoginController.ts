@@ -27,19 +27,16 @@ class DiscordLoginController {
           where: { discordUserId: duInfo.id },
         })
 
-        const expiresIn = new Date(Date.now() + r.expires_in * 1000)
-
         if (existingUser) {
-          existingUser.accessToken = r.access_token
-          existingUser.refreshToken = r.refresh_token
-          existingUser.tokenExpiration = expiresIn
-          await duRepo.save(existingUser)
-
           const token = jwt.sign(
-            { discordUserId: duInfo.id },
+            {
+              discordUserId: duInfo.id,
+              accessToken: r.access_token,
+              refreshToken: r.refresh_token,
+            },
             process.env.JWT_SECRET || 'geheim',
             {
-              expiresIn: process.env.JWT_EXPIRATION || '6h',
+              expiresIn: `${r.expires_in}s`,
             },
           )
 
@@ -51,20 +48,21 @@ class DiscordLoginController {
           return
         } else {
           const du = duRepo.create({
-            accessToken: r.access_token,
-            refreshToken: r.refresh_token,
             discordUserId: duInfo.id,
             currentGuildId: guildId,
-            tokenExpiration: expiresIn,
           })
 
           await duRepo.save(du)
         }
         const token = jwt.sign(
-          { discordUserId: duInfo.id },
+          {
+            discordUserId: duInfo.id,
+            accessToken: r.access_token,
+            refreshToken: r.refresh_token,
+          },
           process.env.JWT_SECRET || 'geheim',
           {
-            expiresIn: process.env.JWT_EXPIRATION || '6h',
+            expiresIn: `${r.expires_in}s`,
           },
         )
 
