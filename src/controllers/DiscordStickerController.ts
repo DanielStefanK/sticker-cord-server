@@ -23,6 +23,7 @@ class DiscordStickerController {
     req: Request,
     res: Response,
   ): Promise<void> {
+    Logger.Info('Adding sticker to server')
     const { stickerId, name } = req.body
     const { currentGuildId } = req.discordUser
 
@@ -42,20 +43,45 @@ class DiscordStickerController {
     const guild = this.bot.guilds.resolve(currentGuildId)
 
     if (!guild) {
+      Logger.Warn('current guild of user does not exist')
       res.json(ErrorHandler.logObjectDoesNotExist({}, currentGuildId))
       return
     }
 
     const eM = new discord.GuildEmojiManager(guild)
 
-    eM.create(
-      sticker.image.data,
-      name ? name.replace(/ /g, '') : sticker.stickerName.replace(/ /g, ''),
-    )
+    const timeout = new Promise((resolve, reject) => {
+      const id = setTimeout(() => {
+        clearTimeout(id)
+        reject('Timed out')
+      }, 5000)
+    })
+
+    Promise.race([
+      eM.create(
+        sticker.image.data,
+        name ? name.replace(/ /g, '') : sticker.stickerName.replace(/ /g, ''),
+      ),
+      timeout,
+    ])
       .then(() => {
         res.json({
           success: true,
         })
+
+        stickerRepo
+          .createQueryBuilder('sticker')
+          .andWhere('sticker.id = :id', { id: stickerId })
+          .getOne()
+          .then((s) => {
+            if (s) {
+              s.downloads = s.downloads + 1
+              stickerRepo.save(s)
+            }
+          })
+          .catch(() => {
+            Logger.Info('could not increase download count')
+          })
       })
       .catch((e) => {
         Logger.Err('could not add emoji')
