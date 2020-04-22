@@ -20,6 +20,9 @@ class Tag {
 
   @Column({ nullable: true })
   icon?: string
+
+  @Column({ default: false })
+  adult?: boolean
 }
 
 const initalTags = ['funny', 'meme', 'gif']

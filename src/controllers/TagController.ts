@@ -11,6 +11,7 @@ class TagController {
   @Get('load/all')
   private async getTags(req: Request, res: Response): Promise<void> {
     Logger.Info(`requesting all tags`)
+    const loggedIn = !!req.user || !!req.discordUser
     const c = getConnection()
     const tagRepo = c.getRepository(Tag)
 
@@ -19,6 +20,9 @@ class TagController {
         order: {
           name: 'ASC',
           id: 'DESC',
+        },
+        where: {
+          ...(loggedIn ? {} : { adult: false }),
         },
       })
       .then((t) => {

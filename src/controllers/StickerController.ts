@@ -9,8 +9,9 @@ import * as ErrorHandler from './ErrorHandler'
 class StickerController {
   @Post('load/all')
   private async getSticker(req: Request, res: Response): Promise<void> {
-    Logger.Info(`requesting all tags`)
+    Logger.Info(`requesting all sticker`)
     const { term, tags, page = 1 } = req.body
+    const loggedIn = !!req.user || !!req.discordUser
     const c = getConnection()
     const stickerRepo = c.getRepository(Sticker)
 
@@ -25,11 +26,16 @@ class StickerController {
         })
       }
 
+      if (!loggedIn || !tags || !tags.length) {
+        q.andWhere('tags.adult = false')
+      }
+
       if (term) {
         q.andWhere('sticker.stickerName like :term', {
           term: `%${term}%`,
         })
       }
+      Logger.Err(q.getSql())
 
       q.orderBy('sticker.downloads', 'DESC')
         .skip((page - 1) * 12)
