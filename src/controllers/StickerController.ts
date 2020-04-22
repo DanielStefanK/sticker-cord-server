@@ -35,7 +35,6 @@ class StickerController {
           term: `%${term}%`,
         })
       }
-      Logger.Err(q.getSql())
 
       q.orderBy('sticker.downloads', 'DESC')
         .skip((page - 1) * 12)
